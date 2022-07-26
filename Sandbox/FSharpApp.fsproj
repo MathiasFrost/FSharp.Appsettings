@@ -24,7 +24,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<ProjectReference Include="..\FSharp.Appsettings\FSharp.Appsettings.fsproj" />
+		<ProjectReference Include="..\Source\FSharp.Appsettings.fsproj" />
 	</ItemGroup>
 
 </Project>

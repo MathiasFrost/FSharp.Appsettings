@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpApp", "FSharpApp\FSharpApp.fsproj", "{72ECBEC5-3621-4CA8-9D87-D3D4BEB0034C}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpApp", "Sandbox\FSharpApp.fsproj", "{72ECBEC5-3621-4CA8-9D87-D3D4BEB0034C}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Appsettings", "FSharp.Appsettings\FSharp.Appsettings.fsproj", "{069271FE-AD18-48B8-B65A-F8387180080B}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Appsettings", "Source\FSharp.Appsettings.fsproj", "{069271FE-AD18-48B8-B65A-F8387180080B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{99E65BC5-DD32-4FC4-ADAC-59B364285D79}"
 	ProjectSection(SolutionItems) = preProject

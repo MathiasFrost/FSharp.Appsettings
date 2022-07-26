@@ -1,8 +1,6 @@
 ﻿// For more information see https://aka.ms/fsharp-console-apps
 
 open FSharp.Appsettings
-open FSharp.Data
-open FSharp.Data.JsonExtensions
 
 type LogLevel =
     { Default: string
@@ -14,6 +12,6 @@ type Settings = { Logging: Logging }
 
 let appsettings = Appsettings.Load
 
-printfn "Config: %A" (appsettings?Logging)
+printfn "Config: %A" appsettings
 
 type Model = { test: string; children: string [] }

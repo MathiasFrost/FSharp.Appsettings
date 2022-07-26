@@ -6,6 +6,12 @@
 			"environmentVariables": {
 				"FSHARP_ENVIRONMENT": "Development"
 			}
+		},
+		"Release": {
+			"commandName": "Project",
+			"environmentVariables": {
+				"FSHARP_ENVIRONMENT": "Release"
+			}
 		}
 	}
 }

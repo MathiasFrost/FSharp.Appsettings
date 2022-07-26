@@ -18,18 +18,24 @@ module Appsettings =
 
     let private Join strings = strings |> String.concat ", "
     
-    let rec private Replace (key: string, value: JsonValue) =
+    let rec private Replace (key: string, value: JsonValue) (y: (string * JsonValue)[] option) =
+        let yVal =
+            match y with
+            | Some x -> x |> Array.tryFind (fun (k, _) -> k = key)
+            | None -> None
+
+                
         match value with
-        | JsonValue.Array x -> Format key $"[{(x |> Seq.map (fun item -> Replace (key, item)) |> Join)}]"
-        | JsonValue.Record x -> Format key $"{{ {(x |> Seq.map Replace |> Join)} }}"
+        | JsonValue.Array x -> Format key $"[{(x |> Seq.map (fun item -> Replace (key, item) yVal) |> Join)}]"
+        | JsonValue.Record x -> Format key $"{{ {(x |> Seq.map (fun item -> Replace item x) |> Join)} }}"
         | JsonValue.Null -> Format key "null"
         | x -> Format key $"%A{x}" // ALl other values
 
     let private Merge x y =
-        let json = JsonValue.Parse x
-        let res = json.Properties |> Seq.map Replace |> Join
-
-        printfn $"{{ {res} }}"
+        let jsonX = JsonValue.Parse x
+        let jsonY = Some (JsonValue.Parse y).Properties
+        let res = jsonX.Properties |> Seq.map (fun x -> Replace x jsonY) |> Join
+        
         JsonValue.Parse $"{{ {res} }}"
 
     let Load: JsonValue =

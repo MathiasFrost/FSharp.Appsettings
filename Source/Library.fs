@@ -3,7 +3,6 @@
 open System
 open System.IO
 open FSharp.Data
-open FSharp.Data.JsonExtensions
 
 module Appsettings =
 
@@ -14,30 +13,34 @@ module Appsettings =
         | true -> Some(File.ReadAllText filename)
         | false -> None
 
-    let private Format key value = $"\"%s{key}\": %s{value}"
-
-    let private Join strings = strings |> String.concat ", "
+    /// Find first comma not in quotes
+    let rec private FirstComma (str: string) (i: int32) (inQuotes: bool) (escaped: bool): int32 option =
+        try
+            match str.Chars i with
+            | ',' when not inQuotes -> Some i
+            | '"' when not escaped -> FirstComma str (i + 1) (not inQuotes) false
+            | '"' when escaped -> FirstComma str (i + 1) inQuotes false
+            | '\\' when not escaped -> FirstComma str (i + 1) inQuotes true
+            | _ -> FirstComma str (i + 1) inQuotes false
+        with
+            | :? IndexOutOfRangeException -> None
     
-    let rec private Replace (key: string, value: JsonValue) (y: (string * JsonValue)[] option) =
-        let yVal =
-            match y with
-            | Some x -> x |> Array.tryFind (fun (k, _) -> k = key)
-            | None -> None
+    /// Split JSON string on commas not in quotes
+    let rec private Split (str: string) (i: int32) (res: string list): string list =
+        let firstQuote = str.IndexOf('"', i)
+        match FirstComma str firstQuote false false with
+        | Some firstComma ->
+            let row = str[firstQuote..firstComma - 1]
+            printfn "%s" row
+            Split str (firstComma + 1) (res @ [row])
+        | None -> res
+    
+    /// Merge two JSON strings
+    let private Merge (x: string) (y: string) =
+        let rows = Split x (x.IndexOf '{') List.empty
+        JsonValue.Parse "{}"
 
-                
-        match value with
-        | JsonValue.Array x -> Format key $"[{(x |> Seq.map (fun item -> Replace (key, item) yVal) |> Join)}]"
-        | JsonValue.Record x -> Format key $"{{ {(x |> Seq.map (fun item -> Replace item x) |> Join)} }}"
-        | JsonValue.Null -> Format key "null"
-        | x -> Format key $"%A{x}" // ALl other values
-
-    let private Merge x y =
-        let jsonX = JsonValue.Parse x
-        let jsonY = Some (JsonValue.Parse y).Properties
-        let res = jsonX.Properties |> Seq.map (fun x -> Replace x jsonY) |> Join
-        
-        JsonValue.Parse $"{{ {res} }}"
-
+    /// Load appsettings
     let Load: JsonValue =
         let env =
             Environment.GetEnvironmentVariable "FSHARP_ENVIRONMENT"

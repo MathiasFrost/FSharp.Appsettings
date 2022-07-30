@@ -14,13 +14,13 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
-		<Content Include="appsettings.Development.json" Condition="$(CONFIGURATION) == 'Debug'">
+		<Content Include="appsettings.Development.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+			<CopyToPublishDirectory Condition="$(CONFIGURATION) == 'Debug'">PreserveNewest</CopyToPublishDirectory>
 		</Content>
-		<Content Include="appsettings.Production.json" Condition="$(CONFIGURATION) == 'Production'">
+		<Content Include="appsettings.Production.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+			<CopyToPublishDirectory Condition="$(CONFIGURATION) == 'Production'">PreserveNewest</CopyToPublishDirectory>
 		</Content>
 		<Content Include="Properties\launchSettings.json" />
 	</ItemGroup>

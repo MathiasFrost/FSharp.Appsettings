@@ -2,6 +2,8 @@
 
 open System
 open System.IO
+open System.Text
+open System.Text.Json
 open FSharp.Data
 
 type private Parser(str: string) =
@@ -66,9 +68,9 @@ type private Parser(str: string) =
 
         let start = i
         let mutable inQuotes = false
-
+        // Values ends when we hit an object closing or a comma
         while not inQuotes && (str[i] <> ',' || str[i] <> '}') do
-            if str[i] = '\\' then
+            if str[i] = '\\' then // Skip escaped chars
                 i <- i + 2
             else
                 i <- i + 1
@@ -80,11 +82,11 @@ type private Parser(str: string) =
         i <- i + 1
 
         skipCommentsAndWhitespace ()
-
+        // Skip comma
         if str[i] = ',' then
             i <- i + 1
             skipCommentsAndWhitespace ()
-
+        // Climb up JSON object depth
         while str[i] = '}' && prefixes.Count > 0 do
             prefixes.RemoveAt(prefixes.Count - 1)
             i <- i + 1
@@ -101,9 +103,9 @@ type private Parser(str: string) =
         ensure (str[i] = '"')
         let start = i
         i <- i + 1
-
+        // Key always ends with closing quote
         while str[i] <> '"' do
-            if str[i] = '\\' then
+            if str[i] = '\\' then // Skip escaped chars
                 i <- i + 2
             else
                 i <- i + 1
@@ -141,8 +143,6 @@ type private Parser(str: string) =
                 String.concat "__" (List.ofArray (prefixes.ToArray()) @ [ key ])
 
             let value = getValue ()
-            printfn "\npair: %s: %s\n" fullKey value
-
             pairs.Add(fullKey, value)
 
         pairs.ToArray() |> Map.ofArray
@@ -157,11 +157,32 @@ module Appsettings =
         | true -> Some(File.ReadAllText filename)
         | false -> None
 
+    /// Mash the two maps together with env values overwriting root values
+    let private Replace (root: Map<string, string>) (env: Map<string, string>) =
+        let mutable res = root
+
+        for pair in env do
+            res <- res.Add(pair.Key, pair.Value)
+
+        res
+
+    /// Turn key/value pairs back into a JSON string
+    let private Serialize (pairs: Map<string, string>) : string =
+        let strings = ResizeArray<string>()
+        for pair in pairs do
+            strings.Add $"{pair.Key}:{pair.Value}"
+
+        "{" + String.concat "," strings + "}"
+
     /// Merge two JSON strings
-    let private Merge (x: string) (y: string) =
-        let pairs = Parser(x).Parse()
-        printfn "%A" pairs
-        JsonValue.Parse "{}"
+    let rec private Merge (root: string) (env: string) =
+        let json =
+            (Parser(root).Parse(), Parser(env).Parse())
+            ||> Replace
+            |> Serialize
+
+        printfn "%A" json
+        JsonValue.Parse json
 
     /// Load appsettings
     let Load: JsonValue =
@@ -174,7 +195,7 @@ module Appsettings =
             | false -> TryReadFile $"appsettings.{env}.json"
 
         match TryReadFile "appsettings.json" with
-        | Some envRoot when envJson.IsSome -> Merge envRoot envJson.Value // Both merged
-        | Some envRoot when envJson.IsNone -> JsonValue.Parse envRoot // Only appsettings.json
+        | Some rootEnv when envJson.IsSome -> Merge rootEnv envJson.Value // Both merged
+        | Some rootEnv when envJson.IsNone -> JsonValue.Parse rootEnv // Only appsettings.json
         | None when envJson.IsSome -> JsonValue.Parse envJson.Value // Only appsettings.{env}.json
         | _ -> raise (NullReferenceException "No appsettings.json was found") // Both non-existent

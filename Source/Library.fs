@@ -77,8 +77,23 @@ type private Parser(str: string) =
                     inQuotes <- not inQuotes
 
         let value = str[start..i]
-        printfn "value: %s" value
         i <- i + 1
+
+        skipCommentsAndWhitespace ()
+
+        if str[i] = ',' then
+            i <- i + 1
+            skipCommentsAndWhitespace ()
+
+        while str[i] = '}' && prefixes.Count > 0 do
+            prefixes.RemoveAt(prefixes.Count - 1)
+            i <- i + 1
+            skipCommentsAndWhitespace ()
+
+            if str[i] = ',' then
+                i <- i + 1
+                skipCommentsAndWhitespace ()
+
         value
 
     /// Get the first key part of a JSON string
@@ -110,19 +125,6 @@ type private Parser(str: string) =
         else
             key
 
-    /// Climb up from JSON objects levels
-    let ascend () =
-        skipCommentsAndWhitespace ()
-
-        if str[i] = ',' then
-            i <- i + 1
-            skipCommentsAndWhitespace ()
-
-        while str[i] = '}' do
-            prefixes.RemoveAt(prefixes.Count - 1)
-            i <- i + 1
-            skipCommentsAndWhitespace ()
-
     /// Parse a JSON string into flat key/value pars
     member _.Parse() =
         skipCommentsAndWhitespace ()
@@ -130,20 +132,20 @@ type private Parser(str: string) =
         i <- i + 1
 
         let stop = str.LastIndexOf '}'
+        skipCommentsAndWhitespace ()
 
         while i < stop do
-            ascend ()
             let key = getKey ()
-            printfn "key: %s" key
+
             let fullKey =
-                String.Join("__", List.ofArray (prefixes.ToArray()) @ [key])
+                String.concat "__" (List.ofArray (prefixes.ToArray()) @ [ key ])
 
             let value = getValue ()
             printfn "\npair: %s: %s\n" fullKey value
 
             pairs.Add(fullKey, value)
 
-        ""
+        pairs.ToArray() |> Map.ofArray
 
 module Appsettings =
 
@@ -157,8 +159,8 @@ module Appsettings =
 
     /// Merge two JSON strings
     let private Merge (x: string) (y: string) =
-        let rows = Parser(x).Parse()
-        printfn "%d" rows.Length
+        let pairs = Parser(x).Parse()
+        printfn "%A" pairs
         JsonValue.Parse "{}"
 
     /// Load appsettings

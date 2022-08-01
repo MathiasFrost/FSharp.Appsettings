@@ -33,11 +33,79 @@ You can then run this code to load one or two `appsettings.json` files with this
 ```f#
 open FSharp.Appsettings
 
-let appsettings = Appsettings.Load
+let appsettings = Appsettings.Load ()
+
+// Or by using a type
+let typedAppsettings = Appsettings.LoadTyped<Model> ()
 ```
 
 `appsettings.json` will always be loaded, while `appsettings.{FSHARP_ENVIRONMENT}.json` will be loaded if
 FSHARP_ENVIRONMENT is defined as an environment variable.  
 Properties from `appsettings.json` will be overwritten by the environment specific
 appsettings.  
-Arrays will be TODO:...
+Arrays will be added together if a value does not already exist in the array.
+
+## Example
+
+```json5
+// appsettings.json
+{
+	"Env": "Root",
+	"CORS": {
+		"AllowedOrigins": [
+			"https://localhost:3000", "https://fsharp.org"
+		]
+	},
+	"Logging": {
+		"LogLevel": {
+			"Default": "Debug",
+			"System": "Information",
+			"Microsoft": "Information",
+			"Test": "Critical"
+		}
+	},
+	"OnlyRoot": "Root"
+}
+```
+
+```json5
+// appsettings.Development.json (FSHARP_ENVIRONMENT=Development)
+{
+	"Env": "Development",
+	"CORS": {
+		"AllowedOrigins": [
+			"https://localhost:3000"
+		]
+	},
+	"Logging": {
+		"LogLevel": {
+			"Default": "Debug",
+			"System": "Information",
+			"Microsoft": "Information"
+		}
+	},
+	"OnlyDev": "Dev"
+}
+```
+
+```json5
+// Resulting object after Appsettings.load ()
+{
+	"Env": "Development",
+	"CORS": {
+		"AllowedOrigins": [
+			"https://localhost:3000", "https://fsharp.org"
+		]
+	},
+	"Logging": {
+		"LogLevel": {
+			"Default": "Debug",
+			"System": "Information",
+			"Microsoft": "Information",
+			"Test": "Critical"
+		}
+	},
+	"OnlyDev": "Dev",
+	"OnlyRoot": "Root"
+}
+```

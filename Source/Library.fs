@@ -2,6 +2,7 @@
 
 open System
 open System.IO
+open System.Text.Json
 open System.Text.Json.Nodes
 
 module Appsettings =
@@ -15,7 +16,7 @@ module Appsettings =
         | false -> None
 
     /// Find out which value type the JsonNode is
-    let (|Value|Object|Array|) (node: JsonNode) =
+    let private (|Value|Object|Array|) (node: JsonNode) =
         try
             node.AsValue() |> ignore
             Value
@@ -66,7 +67,7 @@ module Appsettings =
                 | Array -> MergeArray (i.Current.AsArray()) env // Adding Array to Array (recursive array merging)
 
     /// Add thee root values that does not exist in env
-    and Merge (root: JsonObject) (env: JsonObject) : JsonObject =
+    and private Merge (root: JsonObject) (env: JsonObject) : JsonObject =
         let i = root.GetEnumerator()
 
         while i.MoveNext() do
@@ -108,3 +109,6 @@ module Appsettings =
         | Some rootEnv when envJson.IsNone -> ToObject rootEnv // Only appsettings.json
         | None when envJson.IsSome -> ToObject envJson.Value // Only appsettings.{env}.json
         | _ -> raise (NullReferenceException "No appsettings.json was found") // Both non-existent
+
+    /// Load appsettings
+    let LoadTyped<'T> () : 'T = Load().Deserialize<'T>()

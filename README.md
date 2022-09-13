@@ -1,14 +1,6 @@
 # FSharp.Appsettings - _FSharp_
 
-Environment-sensitive `appsettings.json` handler.
-
-## Committing
-
-Important to run this before committing _(assuming you have GPG key set up)_
-
-```shell
-git config commit.gpgsign true
-```
+Minimalistic environment-sensitive `appsettings.json` importer.
 
 ## Usage
 
@@ -113,3 +105,11 @@ Arrays will be added together if a value does not already exist in the array.
 **Note:** This NuGet does not support defining secrets by defining `<UserSecretsId>` in the `.csproj` file.  
 This is a bit of an opinionated design choice since I personally prefer just defining "local only" variables in
 appsettings.Development.json that you simply do not commit _(in this project it **is** committed as an example :) )_.
+
+## Committing
+
+Important to run this before committing _(assuming you have GPG key set up)_
+
+```shell
+git config commit.gpgsign true
+```

@@ -94,8 +94,7 @@ module Appsettings =
 
     /// Load appsettings
     let Load () : JsonObject =
-        let env =
-            Environment.GetEnvironmentVariable "FSHARP_ENVIRONMENT"
+        let env = Environment.GetEnvironmentVariable "FSHARP_ENVIRONMENT"
 
         let envJson =
             match String.IsNullOrWhiteSpace env with

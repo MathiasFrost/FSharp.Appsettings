@@ -109,3 +109,7 @@ Arrays will be added together if a value does not already exist in the array.
 	"OnlyRoot": "Root"
 }
 ```
+
+**Note:** This NuGet does not support defining secrets by defining `<UserSecretsId>` in the `.csproj` file.  
+This is a bit of an opinionated design choice since I personally prefer just defining "local only" variables in
+appsettings.Development.json that you simply do not commit _(in this project it **is** committed as an example :) )_.

@@ -94,8 +94,7 @@ module Appsettings =
 
     /// Load appsettings
     let Load () : JsonObject =
-        let env =
-            Environment.GetEnvironmentVariable "FSHARP_ENVIRONMENT"
+        let env = Environment.GetEnvironmentVariable "FSHARP_ENVIRONMENT"
 
         let envJson =
             match String.IsNullOrWhiteSpace env with
@@ -110,5 +109,5 @@ module Appsettings =
         | None when envJson.IsSome -> ToObject envJson.Value // Only appsettings.{env}.json
         | _ -> raise (NullReferenceException "No appsettings.json was found") // Both non-existent
 
-    /// Load appsettings
+    /// Load appsettings and deserialize it into an F# type
     let LoadTyped<'T> () : 'T = Load().Deserialize<'T>()

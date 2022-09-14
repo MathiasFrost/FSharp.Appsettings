@@ -13,6 +13,7 @@ let appsettings = Appsettings.Load()
 
 printfn "Config: %s" (appsettings.ToJsonString(JsonSerializerOptions(WriteIndented = true)))
 
-let typedAppsettings = Appsettings.LoadTyped<Settings>()
+let typedAppsettings =
+    Appsettings.LoadTyped<Settings>()
 
 printfn "Typed: %A" typedAppsettings

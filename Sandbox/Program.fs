@@ -1,13 +1,6 @@
 ﻿open System.Text.Json
 open FSharp.Appsettings
-
-type LogLevel =
-    { Default: string
-      Microsoft: string
-      System: string }
-
-type Logging = { LogLevel: LogLevel }
-type Settings = { Logging: Logging }
+open FSharp.Appsettings.Sandbox.Models
 
 let appsettings = Appsettings.Load()
 

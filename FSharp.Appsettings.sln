@@ -1,8 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpApp", "Sandbox\FSharpApp.fsproj", "{72ECBEC5-3621-4CA8-9D87-D3D4BEB0034C}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Appsettings.Sandbox", "Sandbox\FSharp.Appsettings.Sandbox.fsproj", "{72ECBEC5-3621-4CA8-9D87-D3D4BEB0034C}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Appsettings", "Source\FSharp.Appsettings.fsproj", "{069271FE-AD18-48B8-B65A-F8387180080B}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Appsettings.Test", "Test\FSharp.Appsettings.Test.fsproj", "{57D5B30D-87CA-4EF2-AD24-7980F722A4EB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{99E65BC5-DD32-4FC4-ADAC-59B364285D79}"
 	ProjectSection(SolutionItems) = preProject
@@ -27,5 +29,9 @@ Global
 		{069271FE-AD18-48B8-B65A-F8387180080B}.Debug|x64.Build.0 = Debug|x64
 		{069271FE-AD18-48B8-B65A-F8387180080B}.Production|x64.ActiveCfg = Production|x64
 		{069271FE-AD18-48B8-B65A-F8387180080B}.Production|x64.Build.0 = Production|x64
+		{57D5B30D-87CA-4EF2-AD24-7980F722A4EB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{57D5B30D-87CA-4EF2-AD24-7980F722A4EB}.Debug|x64.Build.0 = Debug|Any CPU
+		{57D5B30D-87CA-4EF2-AD24-7980F722A4EB}.Production|x64.ActiveCfg = Debug|Any CPU
+		{57D5B30D-87CA-4EF2-AD24-7980F722A4EB}.Production|x64.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,6 +1,6 @@
 # FSharp.Appsettings - _FSharp_
 
-Minimalistic environment-sensitive `appsettings.json` importer.
+Minimalistic environment-sensitive `appsettings.json` loader.
 
 ## Usage
 
@@ -9,6 +9,7 @@ launchSettings.json file:
 
 ```json5
 {
+	"$schema": "https://json.schemastore.org/launchsettings.json",
 	"profiles": {
 		"Development": {
 			"commandName": "Project",

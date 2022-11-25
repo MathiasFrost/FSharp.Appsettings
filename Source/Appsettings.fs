@@ -6,7 +6,7 @@ open System.Text.Json
 open System.Text.Json.Nodes
 
 module Appsettings =
-    
+
     /// Read file if exists
     let private TryReadFile filename =
         let exists = File.Exists filename

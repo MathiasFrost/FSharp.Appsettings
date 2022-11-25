@@ -14,7 +14,7 @@
         <Authors>Mathias Amandus Andvik Løken</Authors>
         <PackageTags>F#;FSharp;Appsettings;Config;Configuration</PackageTags>
         <Description>
-            This library aims to make it extremely easy to implement environment-sensitive configuration without having to drag in Microsoft.Extensions.Configuration.
+            Minimalistic environment-sensitive appsettings.json loader
         </Description>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -24,18 +24,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\LICENSE" Pack="true" Visible="false" PackagePath="" />
-        <None Include="..\README.md" Pack="true" Visible="false" PackagePath="" />
-        <None Include="..\icon.png" Pack="true" Visible="false" PackagePath="" />
+        <None Include="..\LICENSE" Pack="true" Visible="false" PackagePath=""/>
+        <None Include="..\README.md" Pack="true" Visible="false" PackagePath=""/>
+        <None Include="..\icon.png" Pack="true" Visible="false" PackagePath=""/>
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="Appsettings.fs" />
-        <Compile Include="JsonObjectExtensions.fs" />
+        <Compile Include="Appsettings.fs"/>
+        <Compile Include="JsonObjectExtensions.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Update="FSharp.Core" Version="7.0.0" />
+        <PackageReference Update="FSharp.Core" Version="7.0.0"/>
     </ItemGroup>
 
 </Project>

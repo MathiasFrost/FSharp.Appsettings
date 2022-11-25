@@ -95,20 +95,39 @@ module Appsettings =
     /// Load appsettings
     let Load () : JsonObject =
         let env =
-            Environment.GetEnvironmentVariable "FSHARP_ENVIRONMENT"
+            try
+                Environment.GetEnvironmentVariable "FSHARP_ENVIRONMENT"
+            with
+            | :? ArgumentNullException -> null
+
+        let rootJson =
+            TryReadFile "appsettings.json"
 
         let envJson =
-            match String.IsNullOrWhiteSpace env with
+            match env = null with
             | true -> None
             | false -> TryReadFile $"appsettings.{env}.json"
 
-        match TryReadFile "appsettings.json" with
-        | Some rootEnv when envJson.IsSome ->
-            (ToObject rootEnv, ToObject envJson.Value)
-            ||> Merge // Both merged
-        | Some rootEnv when envJson.IsNone -> ToObject rootEnv // Only appsettings.json
-        | None when envJson.IsSome -> ToObject envJson.Value // Only appsettings.{env}.json
-        | _ -> raise (NullReferenceException "No appsettings.json was found") // Both non-existent
+        let localRootJson =
+            TryReadFile "appsettings.local.json"
 
-    /// Load appsettings and deserialize it into an F# type
-    let LoadTyped<'T> () : 'T = Load().Deserialize<'T>()
+        let localEnvJson =
+            match env = null with
+            | true -> None
+            | false -> TryReadFile $"appsettings.{env}.local.json"
+
+        let mergedToEnv =
+            match rootJson, envJson with
+            | Some root, Some env -> Merge (ToObject root) (ToObject env) // Both merged
+            | Some root, None -> ToObject root // Only appsettings.json
+            | None, Some env -> ToObject env // Only appsettings.{FSHARP_ENVIRONMENT}.json
+            | None, None -> JsonObject.Create(JsonElement())
+
+        let mergedToLocal =
+            match localRootJson with
+            | Some localRoot -> Merge mergedToEnv (ToObject localRoot) // Both merged
+            | None -> mergedToEnv // Only root and env
+
+        match localEnvJson with
+        | Some localEnv -> Merge mergedToLocal (ToObject localEnv) // Both merged
+        | None -> mergedToLocal // Only root, env and local

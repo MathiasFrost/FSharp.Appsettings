@@ -31,10 +31,9 @@ let appsettings = Appsettings.Load ()
 let typedAppsettings = Appsettings.LoadTyped<Model> ()
 ```
 
-`appsettings.json` will always be loaded, while `appsettings.{FSHARP_ENVIRONMENT}.json` will be loaded if
-FSHARP_ENVIRONMENT is defined as an environment variable.  
-Properties from `appsettings.json` will be overwritten by the environment specific
-appsettings.  
+`appsettings.json` will always be loaded, while `appsettings.{FSHARP_ENVIRONMENT}.json` will be loaded
+if `FSHARP_ENVIRONMENT` is defined as an environment variable.  
+Properties from `appsettings.json` will be overwritten by the environment specific appsettings.  
 Arrays will be added together if a value does not already exist in the array.
 
 ## Example
@@ -103,8 +102,14 @@ Arrays will be added together if a value does not already exist in the array.
 ```
 
 **Note:** This NuGet does not support defining secrets by defining `<UserSecretsId>` in the `.csproj` file.  
-This is a bit of an opinionated design choice since I personally prefer just defining "local only" variables in
-appsettings.Development.json that you simply do not commit _(in this project it **is** committed as an example :) )_.
+Instead it detects `appsettings{.FSHARP_ENVIRONMENT?}.local.json` that you can _(should)_ add to `.gitignore`.
+
+## Order of Priority
+
+1. `appsettings.{FSHARP_ENVIRONMENT}.local.json`
+2. `appsettings.local.json`
+3. `appsettings.{FSHARP_ENVIRONMENT}.json`
+4. `appsettings.json`
 
 ## Committing
 

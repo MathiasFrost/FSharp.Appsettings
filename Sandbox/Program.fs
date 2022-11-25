@@ -6,23 +6,28 @@ let appsettings = Appsettings.Load()
 
 printfn $"Config: %s{appsettings.ToJsonString(JsonSerializerOptions(WriteIndented = true))}"
 
-match appsettings.TryGetPropertyValue "Env" with
-| true, x -> printfn $"Env: %A{x}"
-| false, _ -> failwith "Could not get Env"
+let required =
+    appsettings.Deserialize<RequiredConfig>()
 
-match appsettings.TryGetPropertyValue "Secrets" with
-| true, x ->
-    match x.AsObject().TryGetPropertyValue "ConnectionString" with
-    | true, y -> printfn $"Secret connection string: %A{y}"
-    | false, _ -> failwith "Could not get Secrets__ConnectionString"
-| false, _ -> failwith "Could not get Secrets"
+printfn $"Required: %A{required}"
 
-match appsettings.TryGetPropertyValue "Logging" with
-| true, x ->
-    match x.AsObject().TryGetPropertyValue "LogLevel" with
-    | true, y ->
-        match y.AsObject().TryGetPropertyValue "Default" with
-        | true, z -> printfn $"Default LogLevel: %A{z}"
-        | false, _ -> failwith "Could not get Logging__LogLevel__Default"
-    | false, _ -> failwith "Could not get Logging__LogLevel"
-| false, _ -> failwith "Could not get Logging"
+appsettings
+    .GetPropertyValue("Env")
+    .GetValue<string>()
+|> printfn "Env: %s"
+
+appsettings
+    .GetPropertyValue("Secrets")
+    .AsObject()
+    .GetPropertyValue("ConnectionString")
+    .GetValue<string>()
+|> printfn "Secret connection string: %s"
+
+appsettings
+    .GetPropertyValue("Logging")
+    .AsObject()
+    .GetPropertyValue("LogLevel")
+    .AsObject()
+    .GetPropertyValue("Default")
+    .GetValue<string>()
+|> printfn "Default LogLevel: %s"

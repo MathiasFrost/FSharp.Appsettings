@@ -30,7 +30,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="Library.fs" />
+        <Compile Include="Appsettings.fs" />
+        <Compile Include="JsonObjectExtensions.fs" />
     </ItemGroup>
 
     <ItemGroup>

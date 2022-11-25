@@ -14,7 +14,7 @@
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
 		<Content Include="Properties\launchSettings.json" />
-		<Compile Include="Models\Settings.fs" />
+		<Compile Include="Models\RequiredConfig.fs" />
 		<Compile Include="Program.fs" />
 	</ItemGroup>
 	

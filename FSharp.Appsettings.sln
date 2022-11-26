@@ -1,8 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpApp", "Sandbox\FSharpApp.fsproj", "{72ECBEC5-3621-4CA8-9D87-D3D4BEB0034C}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Appsettings.Sandbox", "Sandbox\FSharp.Appsettings.Sandbox.fsproj", "{72ECBEC5-3621-4CA8-9D87-D3D4BEB0034C}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Appsettings", "Source\FSharp.Appsettings.fsproj", "{069271FE-AD18-48B8-B65A-F8387180080B}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Appsettings.Test", "Tests\FSharp.Appsettings.Test.fsproj", "{57D5B30D-87CA-4EF2-AD24-7980F722A4EB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{99E65BC5-DD32-4FC4-ADAC-59B364285D79}"
 	ProjectSection(SolutionItems) = preProject
@@ -10,21 +12,26 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionF
 		FSharp.Appsettings.sln.DotSettings = FSharp.Appsettings.sln.DotSettings
 		README.md = README.md
 		LICENSE = LICENSE
+		icon.png = icon.png
 	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
-		Production|x64 = Production|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{72ECBEC5-3621-4CA8-9D87-D3D4BEB0034C}.Debug|x64.ActiveCfg = Debug|x64
 		{72ECBEC5-3621-4CA8-9D87-D3D4BEB0034C}.Debug|x64.Build.0 = Debug|x64
-		{72ECBEC5-3621-4CA8-9D87-D3D4BEB0034C}.Production|x64.ActiveCfg = Production|x64
-		{72ECBEC5-3621-4CA8-9D87-D3D4BEB0034C}.Production|x64.Build.0 = Production|x64
-		{069271FE-AD18-48B8-B65A-F8387180080B}.Debug|x64.ActiveCfg = Debug|x64
-		{069271FE-AD18-48B8-B65A-F8387180080B}.Debug|x64.Build.0 = Debug|x64
-		{069271FE-AD18-48B8-B65A-F8387180080B}.Production|x64.ActiveCfg = Production|x64
-		{069271FE-AD18-48B8-B65A-F8387180080B}.Production|x64.Build.0 = Production|x64
+		{72ECBEC5-3621-4CA8-9D87-D3D4BEB0034C}.Release|x64.ActiveCfg = Release|x64
+		{72ECBEC5-3621-4CA8-9D87-D3D4BEB0034C}.Release|x64.Build.0 = Release|x64
+		{069271FE-AD18-48B8-B65A-F8387180080B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{069271FE-AD18-48B8-B65A-F8387180080B}.Debug|x64.Build.0 = Debug|Any CPU
+		{069271FE-AD18-48B8-B65A-F8387180080B}.Release|x64.ActiveCfg = Release|Any CPU
+		{069271FE-AD18-48B8-B65A-F8387180080B}.Release|x64.Build.0 = Release|Any CPU
+		{57D5B30D-87CA-4EF2-AD24-7980F722A4EB}.Debug|x64.ActiveCfg = Debug|x64
+		{57D5B30D-87CA-4EF2-AD24-7980F722A4EB}.Debug|x64.Build.0 = Debug|x64
+		{57D5B30D-87CA-4EF2-AD24-7980F722A4EB}.Release|x64.ActiveCfg = Debug|x64
+		{57D5B30D-87CA-4EF2-AD24-7980F722A4EB}.Release|x64.Build.0 = Debug|x64
 	EndGlobalSection
 EndGlobal

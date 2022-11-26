@@ -1,6 +1,6 @@
 # FSharp.Appsettings - _FSharp_
 
-Minimalistic environment-sensitive `appsettings.json` importer.
+Minimalistic environment-sensitive `appsettings.json` loader.
 
 ## Usage
 
@@ -9,6 +9,7 @@ launchSettings.json file:
 
 ```json5
 {
+	"$schema": "https://json.schemastore.org/launchsettings.json",
 	"profiles": {
 		"Development": {
 			"commandName": "Project",
@@ -27,14 +28,13 @@ open FSharp.Appsettings
 
 let appsettings = Appsettings.Load ()
 
-// Or by using a type
-let typedAppsettings = Appsettings.LoadTyped<Model> ()
+// Deserialize to type
+let required = appsettings.Deserialize<RequiredConfig>()
 ```
 
-`appsettings.json` will always be loaded, while `appsettings.{FSHARP_ENVIRONMENT}.json` will be loaded if
-FSHARP_ENVIRONMENT is defined as an environment variable.  
-Properties from `appsettings.json` will be overwritten by the environment specific
-appsettings.  
+`appsettings.json` will always be loaded, while `appsettings.{FSHARP_ENVIRONMENT}.json` will be loaded
+if `FSHARP_ENVIRONMENT` is defined as an environment variable.  
+Properties from `appsettings.json` will be overwritten by the environment specific appsettings.  
 Arrays will be added together if a value does not already exist in the array.
 
 ## Example
@@ -103,8 +103,29 @@ Arrays will be added together if a value does not already exist in the array.
 ```
 
 **Note:** This NuGet does not support defining secrets by defining `<UserSecretsId>` in the `.csproj` file.  
-This is a bit of an opinionated design choice since I personally prefer just defining "local only" variables in
-appsettings.Development.json that you simply do not commit _(in this project it **is** committed as an example :) )_.
+Instead it detects `appsettings{.FSHARP_ENVIRONMENT?}.local.json` that you can _(should)_ add to `.gitignore`.
+
+## Order of Priority
+
+1. `appsettings.{FSHARP_ENVIRONMENT}.local.json`
+2. `appsettings.local.json`
+3. `appsettings.{FSHARP_ENVIRONMENT}.json`
+4. `appsettings.json`
+
+## Building
+
+The `appsettings.json` files must be copied over to output directory. This is achieved by adding the following to
+your `.fsproj`.
+
+```xml
+
+<ItemGroup>
+    <Content Include="appsettings*.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+</ItemGroup>
+```
 
 ## Committing
 

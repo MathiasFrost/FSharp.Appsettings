@@ -11,9 +11,9 @@ let required = appsettings.Deserialize<RequiredConfig>()
 printfn $"Required: %A{required}"
 
 appsettings
-    .GetPropertyValue("Env")
+    .GetPropertyValue("File")
     .GetValue<string>()
-|> printfn "Env: %s"
+|> printfn "Highest priority: %s"
 
 appsettings
     .GetPropertyValue("Secrets")

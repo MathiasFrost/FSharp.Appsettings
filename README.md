@@ -127,6 +127,20 @@ your `.fsproj`.
 </ItemGroup>
 ```
 
+## Merge rules
+
+Describes what happens when a field from appsettings A encounters a field with the same name from appsettings B
+
+1. Value A - Value B: Value B overwrites value A
+2. Object A - Object B: Recursion
+3. Array A - Array B: Items from array A are added to array B if not already present
+4. Value A - Object B: Object B replaces value A
+5. Value A - Array B: Array B replaces value A
+6. Object A - Value B: Value B replaces Object A
+7. Object A - Array B: Array B replaces Object A
+8. Array A - Value B: Value B replaces Array A
+9. Array A - Object B: Object B replaces Array A
+
 ## Committing
 
 Important to run this before committing _(assuming you have GPG key set up)_

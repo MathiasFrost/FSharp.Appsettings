@@ -17,7 +17,7 @@ module Appsettings =
                 .AsObject()
         | false -> EmptyJsonObject()
 
-    /// Find out which value type the JsonNode is
+    /// Find out which prop type the JsonNode is
     let private (|Value|Object|Array|) (node: JsonNode) =
         try
             node.AsValue() |> ignore
@@ -40,54 +40,50 @@ module Appsettings =
         let item = env.Item key
         if item = null then None else Some item
 
-    /// Check if JSON array contains a value
-    let private Exists (arr: JsonArray) (value: string) : bool = arr |> Seq.exists (fun x -> x.ToString() = value)
+    /// Check if JsonArray array contains a JsonNode
+    let private Exists (arr: JsonArray) (node: JsonNode) : bool = arr |> Seq.exists (fun x -> x.ToJsonString() = node.ToJsonString())
 
-    /// Add array elements from root that does not exist in env
-    let rec private MergeArray (arr: JsonArray) (env: JsonNode) : unit =
-        let i = arr.GetEnumerator()
+    /// Stringify a JsonNode and parse it into a new JsonNode
+    let private CopyNode (node: JsonNode) = node.ToJsonString() |> JsonNode.Parse
 
-        while i.MoveNext() do
-            match i.Current with
-            | Value ->
-                match env with
-                | Value -> failwith "Attempted to add value to a value type" // Adding value to Value (Not possible)
-                | Object -> failwith "Adding value to object not supported" // Adding Value to an object ("{i}": <value>?)
-                | Array -> // Adding Value to array (normal array merging)
-                    if not (Exists (env.AsArray()) (i.Current.ToString())) then env.AsArray().Add(i.Current.ToString())
-            | Object ->
-                match env with
-                | Value -> failwith "Attempted to add object to a value type" // Adding Object to Value (Not possible)
-                | Object -> failwith "Adding object to object not supported" // Adding Object to Object ("{i}": <object>?)
-                | Array -> failwith "Adding object to array not supported" // Adding Object to Array (recursive array merging)
-            | Array ->
-                match env with
-                | Value -> failwith "Attempted to add array to a value type" // Adding Array to Value (Not possible)
-                | Object -> failwith "Adding array to object not supported" // Adding Array to Object ("{i}": <array>?)
-                | Array -> MergeArray (i.Current.AsArray()) env // Adding Array to Array (recursive array merging)
+    /// Add array elements from a that does not exist in b
+    let rec private MergeArray (a: JsonArray) (b: JsonArray) : unit =
+        let elementA = a.GetEnumerator()
 
-    /// Add thee root values that does not exist in env
-    and private Merge (root: JsonObject) (env: JsonObject) : JsonObject =
-        let i = root.GetEnumerator()
+        while elementA.MoveNext() do
+            let copyA = CopyNode elementA.Current
+            if not (Exists b copyA) then b.Add(copyA)
 
-        while i.MoveNext() do
-            match i.Current.Value with
-            | Value ->
-                match TryFind i.Current.Key env with
-                | Some _ -> ()
-                | None -> env.Add(i.Current.Key, i.Current.Value.ToString())
-            | Object ->
-                match TryFind i.Current.Key env with
-                | Some x -> Merge (i.Current.Value.AsObject()) (x.AsObject()) |> ignore
-                | None -> env.Add(i.Current.Key, JsonNode.Parse(i.Current.Value.ToJsonString()))
-            | Array ->
-                match TryFind i.Current.Key env with
-                | Some x -> MergeArray (i.Current.Value.AsArray()) x
-                | None -> env.Add(i.Current.Key, JsonNode.Parse(i.Current.Value.ToJsonString()))
+    /// Add the values from a that does not exist in b
+    and private Merge (a: JsonObject) (b: JsonObject) : JsonObject =
+        let propsA = a.GetEnumerator()
 
-        env
+        while propsA.MoveNext() do
+            match propsA.Current.Value with
+            | Value -> // A is value
+                match TryFind propsA.Current.Key b with
+                | Some _ -> () // If prop exists in b, don't add regardless of type
+                | None -> b.Add(propsA.Current.Key, CopyNode propsA.Current.Value) // If prop does not exist in b, we also don't care about the type of a's prop
+            | Object -> // A is object
+                match TryFind propsA.Current.Key b with
+                | Some propB ->
+                    match propB with
+                    | Value -> () // If prop B is a value we simply replace object A with the value
+                    | Object -> Merge (propsA.Current.Value.AsObject()) (propB.AsObject()) |> ignore // Ignore because object itself is mutated
+                    | Array -> () // If prop B is an array we simply replace object A with the array
+                | None -> b.Add(propsA.Current.Key, CopyNode propsA.Current.Value)
+            | Array -> // A is array
+                match TryFind propsA.Current.Key b with
+                | Some propB ->
+                    match propB with
+                    | Value -> () // If prop B is a value we simply replace array A with the value
+                    | Object -> () // If prop B is an object we simply replace array A with the object
+                    | Array -> MergeArray (propsA.Current.Value.AsArray()) (propB.AsArray()) // If both is array we do exclusive array merge
+                | None -> b.Add(propsA.Current.Key, CopyNode propsA.Current.Value)
 
-    /// Load appsettings
+        b
+
+    /// Load appsettings files, merge them and return a JsonObject
     let Load () : JsonObject =
         let fsEnv =
             try

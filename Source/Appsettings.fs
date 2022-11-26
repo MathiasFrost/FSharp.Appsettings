@@ -43,51 +43,54 @@ module Appsettings =
     /// Check if JSON array contains a value
     let private Exists (arr: JsonArray) (value: string) : bool = arr |> Seq.exists (fun x -> x.ToString() = value)
 
+    /// Stringify a JsonNode and parse it into a new JsonNode
+    let private CopyNode (node: JsonNode) = node.ToJsonString() |> JsonNode.Parse
+
     /// Add array elements from root that does not exist in env
-    let rec private MergeArray (arr: JsonArray) (env: JsonNode) : unit =
+    let rec private MergeArray (arr: JsonArray) (node: JsonNode) : unit =
         let i = arr.GetEnumerator()
 
         while i.MoveNext() do
             match i.Current with
             | Value ->
-                match env with
-                | Value -> failwith "Attempted to add value to a value type" // Adding value to Value (Not possible)
+                match node with
+                | Value -> invalidOp "Attempted to add value to a value type" // Adding value to Value (Not possible)
                 | Object -> failwith "Adding value to object not supported" // Adding Value to an object ("{i}": <value>?)
                 | Array -> // Adding Value to array (normal array merging)
-                    if not (Exists (env.AsArray()) (i.Current.ToString())) then env.AsArray().Add(i.Current.ToString())
+                    if not (Exists (node.AsArray()) (i.Current.ToString())) then node.AsArray().Add(i.Current.ToString())
             | Object ->
-                match env with
-                | Value -> failwith "Attempted to add object to a value type" // Adding Object to Value (Not possible)
+                match node with
+                | Value -> invalidOp "Attempted to add object to a value type" // Adding Object to Value (Not possible)
                 | Object -> failwith "Adding object to object not supported" // Adding Object to Object ("{i}": <object>?)
                 | Array -> failwith "Adding object to array not supported" // Adding Object to Array (recursive array merging)
             | Array ->
-                match env with
-                | Value -> failwith "Attempted to add array to a value type" // Adding Array to Value (Not possible)
+                match node with
+                | Value -> invalidOp "Attempted to add array to a value type" // Adding Array to Value (Not possible)
                 | Object -> failwith "Adding array to object not supported" // Adding Array to Object ("{i}": <array>?)
-                | Array -> MergeArray (i.Current.AsArray()) env // Adding Array to Array (recursive array merging)
+                | Array -> MergeArray (i.Current.AsArray()) node // Adding Array to Array (recursive array merging)
 
-    /// Add thee root values that does not exist in env
-    and private Merge (root: JsonObject) (env: JsonObject) : JsonObject =
-        let i = root.GetEnumerator()
+    /// Add the values from a that does not exist in b
+    and private Merge (a: JsonObject) (b: JsonObject) : JsonObject =
+        let fieldsA = a.GetEnumerator()
 
-        while i.MoveNext() do
-            match i.Current.Value with
+        while fieldsA.MoveNext() do
+            match fieldsA.Current.Value with
             | Value ->
-                match TryFind i.Current.Key env with
-                | Some _ -> ()
-                | None -> env.Add(i.Current.Key, i.Current.Value.ToString())
+                match TryFind fieldsA.Current.Key b with
+                | Some _ -> () // If field exists in b, don't add regardless of type
+                | None -> b.Add(fieldsA.Current.Key, CopyNode fieldsA.Current.Value) // If field does not exist in b, we also don't care about the type of a's field
             | Object ->
-                match TryFind i.Current.Key env with
-                | Some x -> Merge (i.Current.Value.AsObject()) (x.AsObject()) |> ignore
-                | None -> env.Add(i.Current.Key, JsonNode.Parse(i.Current.Value.ToJsonString()))
+                match TryFind fieldsA.Current.Key b with
+                | Some object -> Merge (fieldsA.Current.Value.AsObject()) (object.AsObject()) |> ignore // Object itself is mutated
+                | None -> b.Add(fieldsA.Current.Key, CopyNode fieldsA.Current.Value)
             | Array ->
-                match TryFind i.Current.Key env with
-                | Some x -> MergeArray (i.Current.Value.AsArray()) x
-                | None -> env.Add(i.Current.Key, JsonNode.Parse(i.Current.Value.ToJsonString()))
+                match TryFind fieldsA.Current.Key b with
+                | Some array -> MergeArray (fieldsA.Current.Value.AsArray()) array
+                | None -> b.Add(fieldsA.Current.Key, CopyNode fieldsA.Current.Value)
 
-        env
+        b
 
-    /// Load appsettings
+    /// Load appsettings files
     let Load () : JsonObject =
         let fsEnv =
             try

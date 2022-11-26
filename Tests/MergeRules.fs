@@ -44,7 +44,7 @@ let ``Number B should be unchanged if not exists on A`` () =
 let ``Object B should be recursively merged`` () =
     let appsettings = Appsettings.Load()
     let object = appsettings.GetPropertyValue "5_ObjectOnObject"
-    let value = object.AsObject().GetPropertyValue "Field"
+    let value = object.AsObject().GetPropertyValue "Prop"
     Assert.That(value.Deserialize<string>(), Is.EqualTo "Dev")
 
     let number = object.AsObject().GetPropertyValue "Number"
@@ -54,14 +54,14 @@ let ``Object B should be recursively merged`` () =
 let ``Object A should be added if not exists on B`` () =
     let appsettings = Appsettings.Load()
     let object = appsettings.GetPropertyValue "6_ObjectOnEmpty"
-    let value = object.AsObject().GetPropertyValue "Field"
+    let value = object.AsObject().GetPropertyValue "Prop"
     Assert.That(value.Deserialize<string>(), Is.EqualTo "Root")
 
 [<Test>]
 let ``Object B should be unchanged if not exists on A`` () =
     let appsettings = Appsettings.Load()
     let object = appsettings.GetPropertyValue "7_EmptyOnObject"
-    let value = object.AsObject().GetPropertyValue "Field"
+    let value = object.AsObject().GetPropertyValue "Prop"
     Assert.That(value.Deserialize<string>(), Is.EqualTo "Dev")
 
 [<Test>]
@@ -74,14 +74,14 @@ let ``Value B should overwrite Object A`` () =
 let ``Object B should overwrite Value A`` () =
     let appsettings = Appsettings.Load()
     let object = appsettings.GetPropertyValue "9_ValueOnObject"
-    let value = object.AsObject().GetPropertyValue "Field"
+    let value = object.AsObject().GetPropertyValue "Prop"
     Assert.That(value.Deserialize<string>(), Is.EqualTo "Dev")
 
 [<Test>]
 let ``Object B should overwrite Array A`` () =
     let appsettings = Appsettings.Load()
     let object = appsettings.GetPropertyValue "10_ArrayOnObject"
-    let value = object.AsObject().GetPropertyValue "Field"
+    let value = object.AsObject().GetPropertyValue "Prop"
     Assert.That(value.Deserialize<string>(), Is.EqualTo "Dev")
 
 [<Test>]
@@ -130,13 +130,13 @@ let ``Array B should exclusive merge with Object Array A`` () =
     let array = appsettings.GetPropertyValue "16_ObjectArrayOnArray"
     let values = array.Deserialize<JsonNode list>()
     Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "\"Dev\""))
-    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "{\"Field\":\"Root\"}"))
+    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "{\"Prop\":\"Root\"}"))
 
 [<Test>]
 let ``Object Array B should exclusive merge with Object Array A`` () =
     let appsettings = Appsettings.Load()
     let array = appsettings.GetPropertyValue "17_ObjectArrayOnObjectArray"
     let values = array.Deserialize<JsonNode list>()
-    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "{\"Field\":\"Dev\"}"))
-    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "{\"Field\":\"Root\"}"))
+    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "{\"Prop\":\"Dev\"}"))
+    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "{\"Prop\":\"Root\"}"))
     Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "{\"Bool\":true}"))

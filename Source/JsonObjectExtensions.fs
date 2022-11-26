@@ -6,7 +6,7 @@ open System.Text.Json.Nodes
 [<Extension>]
 type JsonObjectExtensions =
 
-    /// TryGetPropertyValue without the 'Try'. Throw System.ArgumentNullException if field does not exist on object
+    /// TryGetPropertyValue without the 'Try'. Throw System.ArgumentNullException if property does not exist on object
     [<Extension>]
     static member inline GetPropertyValue(xs: JsonObject, propertyName: string) =
         match xs.TryGetPropertyValue propertyName with

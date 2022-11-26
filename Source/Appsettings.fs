@@ -17,7 +17,7 @@ module Appsettings =
                 .AsObject()
         | false -> EmptyJsonObject()
 
-    /// Find out which field type the JsonNode is
+    /// Find out which prop type the JsonNode is
     let private (|Value|Object|Array|) (node: JsonNode) =
         try
             node.AsValue() |> ignore
@@ -56,30 +56,30 @@ module Appsettings =
 
     /// Add the values from a that does not exist in b
     and private Merge (a: JsonObject) (b: JsonObject) : JsonObject =
-        let fieldsA = a.GetEnumerator()
+        let propsA = a.GetEnumerator()
 
-        while fieldsA.MoveNext() do
-            match fieldsA.Current.Value with
+        while propsA.MoveNext() do
+            match propsA.Current.Value with
             | Value -> // A is value
-                match TryFind fieldsA.Current.Key b with
-                | Some _ -> () // If field exists in b, don't add regardless of type
-                | None -> b.Add(fieldsA.Current.Key, CopyNode fieldsA.Current.Value) // If field does not exist in b, we also don't care about the type of a's field
+                match TryFind propsA.Current.Key b with
+                | Some _ -> () // If prop exists in b, don't add regardless of type
+                | None -> b.Add(propsA.Current.Key, CopyNode propsA.Current.Value) // If prop does not exist in b, we also don't care about the type of a's prop
             | Object -> // A is object
-                match TryFind fieldsA.Current.Key b with
-                | Some fieldB ->
-                    match fieldB with
-                    | Value -> () // If field B is a value we simply replace object A with the value
-                    | Object -> Merge (fieldsA.Current.Value.AsObject()) (fieldB.AsObject()) |> ignore // Ignore because object itself is mutated
-                    | Array -> () // If field B is an array we simply replace object A with the array
-                | None -> b.Add(fieldsA.Current.Key, CopyNode fieldsA.Current.Value)
+                match TryFind propsA.Current.Key b with
+                | Some propB ->
+                    match propB with
+                    | Value -> () // If prop B is a value we simply replace object A with the value
+                    | Object -> Merge (propsA.Current.Value.AsObject()) (propB.AsObject()) |> ignore // Ignore because object itself is mutated
+                    | Array -> () // If prop B is an array we simply replace object A with the array
+                | None -> b.Add(propsA.Current.Key, CopyNode propsA.Current.Value)
             | Array -> // A is array
-                match TryFind fieldsA.Current.Key b with
-                | Some fieldB ->
-                    match fieldB with
-                    | Value -> () // If field B is a value we simply replace array A with the value
-                    | Object -> () // If field B is an object we simply replace array A with the object
-                    | Array -> MergeArray (fieldsA.Current.Value.AsArray()) (fieldB.AsArray()) // If both is array we do exclusive array merge
-                | None -> b.Add(fieldsA.Current.Key, CopyNode fieldsA.Current.Value)
+                match TryFind propsA.Current.Key b with
+                | Some propB ->
+                    match propB with
+                    | Value -> () // If prop B is a value we simply replace array A with the value
+                    | Object -> () // If prop B is an object we simply replace array A with the object
+                    | Array -> MergeArray (propsA.Current.Value.AsArray()) (propB.AsArray()) // If both is array we do exclusive array merge
+                | None -> b.Add(propsA.Current.Key, CopyNode propsA.Current.Value)
 
         b
 

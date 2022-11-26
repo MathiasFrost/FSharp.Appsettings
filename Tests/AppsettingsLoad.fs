@@ -43,7 +43,7 @@ let ``Result should be empty if no appsettings.json files`` () =
     Assert.That("{}", Is.EqualTo(appsettings.ToJsonString()))
 
 [<Test>]
-let ``Highest priority file should be appsettings.json when no higher exists`` () =
+let ``Highest priority should be appsettings.json when no higher exists`` () =
     let envJson = File.ReadAllText "appsettings.Development.json"
     let rootLocalJson = File.ReadAllText "appsettings.local.json"
     let envLocalJson = File.ReadAllText "appsettings.Development.local.json"
@@ -63,7 +63,7 @@ let ``Highest priority file should be appsettings.json when no higher exists`` (
     Assert.That("appsettings.json", Is.EqualTo(file.Deserialize<string>()))
 
 [<Test>]
-let ``Highest priority file should be appsettings.Development.json when no higher exists`` () =
+let ``Highest priority should be appsettings.Development.json when no higher exists`` () =
     let rootLocalJson = File.ReadAllText "appsettings.local.json"
     let envLocalJson = File.ReadAllText "appsettings.Development.local.json"
 
@@ -80,7 +80,7 @@ let ``Highest priority file should be appsettings.Development.json when no highe
     Assert.That("appsettings.Development.json", Is.EqualTo(file.Deserialize<string>()))
 
 [<Test>]
-let ``Highest priority file should be appsettings.local.json when no higher exists`` () =
+let ``Highest priority should be appsettings.local.json when no higher exists`` () =
     let envLocalJson = File.ReadAllText "appsettings.Development.local.json"
 
     File.Delete "appsettings.Development.local.json"
@@ -94,7 +94,14 @@ let ``Highest priority file should be appsettings.local.json when no higher exis
     Assert.That("appsettings.local.json", Is.EqualTo(file.Deserialize<string>()))
 
 [<Test>]
-let ``Highest priority file should be appsettings.Development.local.json`` () =
+let ``Highest priority should be appsettings.Development.local.json`` () =
     let appsettings = Appsettings.Load()
     let file = appsettings.GetPropertyValue "File"
     Assert.That("appsettings.Development.local.json", Is.EqualTo(file.Deserialize<string>()))
+
+[<Test>]
+let ``Highest priority should be appsettings.local.json if FSHARP_ENVIRONMENT not set`` () =
+    Environment.SetEnvironmentVariable("FSHARP_ENVIRONMENT", null)
+    let appsettings = Appsettings.Load()
+    let file = appsettings.GetPropertyValue "File"
+    Assert.That("appsettings.local.json", Is.EqualTo(file.Deserialize<string>()))

@@ -1,4 +1,4 @@
-# FSharp.Appsettings - _FSharp_
+# FSharp.Appsettings - _F#_
 
 Minimalistic environment-sensitive `appsettings.json` loader.
 
@@ -29,6 +29,8 @@ open FSharp.Appsettings
 let appsettings = Appsettings.Load ()
 
 // Deserialize to type
+open System.Text.Json
+
 let required = appsettings.Deserialize<RequiredConfig>()
 ```
 

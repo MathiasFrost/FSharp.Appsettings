@@ -10,24 +10,19 @@
         <Configurations>Debug;Release</Configurations>
 
         <PackageId>FSharp.Appsettings</PackageId>
-        <Version>1.0.2</Version>
+        <Version>1.0.3</Version>
         <Authors>Mathias Amandus Andvik Løken</Authors>
         <PackageTags>F#;FSharp;Appsettings;Config;Configuration</PackageTags>
         <Description>
             Minimalistic environment-sensitive appsettings.json loader
         </Description>
-        <PackageLicenseFile>LICENSE</PackageLicenseFile>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageIcon>icon.png</PackageIcon>
-        <RepositoryUrl>https://github.com/MathiasFrost/FSharp.Appsettings</RepositoryUrl>
+        
         <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/MathiasFrost/FSharp.Appsettings</RepositoryUrl>
+        <PackageLicenseUrl>https://raw.githubusercontent.com/MathiasFrost/FSharp.Appsettings/main/LICENSE</PackageLicenseUrl>
+        <PackageReadmeUrl>https://raw.githubusercontent.com/MathiasFrost/FSharp.Appsettings/main/README.md</PackageReadmeUrl>
+        <PackageIconUrl>https://raw.githubusercontent.com/MathiasFrost/FSharp.Appsettings/main/logo.png</PackageIconUrl>
     </PropertyGroup>
-
-    <ItemGroup>
-        <None Include="..\LICENSE" Pack="true" Visible="false" PackagePath=""/>
-        <None Include="..\README.md" Pack="true" Visible="false" PackagePath=""/>
-        <None Include="..\icon.png" Pack="true" Visible="false" PackagePath=""/>
-    </ItemGroup>
 
     <ItemGroup>
         <Compile Include="Appsettings.fs"/>

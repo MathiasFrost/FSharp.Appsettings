@@ -1,6 +1,7 @@
 ﻿open System.Text.Json
 open FSharp.Appsettings
-open FSharp.Appsettings.Sandbox.Models
+open FSharp.Appsettings.Sandbox.Configuration
+open Microsoft.Extensions.Logging
 
 let appsettings = Appsettings.Load()
 
@@ -30,3 +31,16 @@ appsettings
     .GetPropertyValue("Default")
     .GetValue<string>()
 |> printfn "Default LogLevel: %s"
+
+type Program = { unit: unit }
+
+let logger =
+    LoggerFactory
+        .Create(fun builder -> builder |> ignore)
+        .CreateLogger<Program>()
+
+let logInformation (message: string) =
+    logger.LogInformation message
+    printfn $"Information: %s{message}"
+
+logInformation "Hello"

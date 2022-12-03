@@ -1,4 +1,4 @@
-﻿namespace FSharp.Appsettings.Sandbox.Models
+﻿namespace FSharp.Appsettings.Sandbox.Configuration
 
 type Secrets = { ConnectionString: string }
 

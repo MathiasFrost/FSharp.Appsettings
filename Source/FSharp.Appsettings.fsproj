@@ -10,7 +10,7 @@
         <Configurations>Debug;Release</Configurations>
 
         <PackageId>FSharp.Appsettings</PackageId>
-        <Version>1.0.3</Version>
+        <Version>1.0.4</Version>
         <Authors>Mathias Amandus Andvik Løken</Authors>
         <PackageTags>F#;FSharp;Appsettings;Config;Configuration</PackageTags>
         <Description>
@@ -19,10 +19,17 @@
         
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/MathiasFrost/FSharp.Appsettings</RepositoryUrl>
-        <PackageLicenseUrl>https://raw.githubusercontent.com/MathiasFrost/FSharp.Appsettings/main/LICENSE</PackageLicenseUrl>
-        <PackageReadmeUrl>https://raw.githubusercontent.com/MathiasFrost/FSharp.Appsettings/main/README.md</PackageReadmeUrl>
-        <PackageIconUrl>https://raw.githubusercontent.com/MathiasFrost/FSharp.Appsettings/main/logo.png</PackageIconUrl>
+
+        <PackageIcon>logo.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\logo.png" Pack="true" Visible="false" PackagePath=""/>
+        <None Include="..\README.md" Pack="true" Visible="false" PackagePath=""/>
+        <None Include="..\LICENSE" Pack="true" Visible="false" PackagePath=""/>
+    </ItemGroup>
 
     <ItemGroup>
         <Compile Include="Appsettings.fs"/>

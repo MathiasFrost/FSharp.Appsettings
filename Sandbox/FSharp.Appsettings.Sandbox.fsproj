@@ -15,7 +15,6 @@
         </Content>
         <Content Include="Properties\launchSettings.json" />
         <Compile Include="Configuration\RequiredConfig.fs" />
-        <Compile Include="Console\ConsoleLogger.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

@@ -1,5 +1,7 @@
 # FSharp.Appsettings - _F#_
 
+![Logo](https://raw.githubusercontent.com/MathiasFrost/FSharp.Appsettings/main/logo.png)
+
 Minimalistic environment-sensitive `appsettings.json` loader.
 
 ## Usage

@@ -1,43 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
 
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
-        <Platforms>AnyCPU</Platforms>
-        <Configurations>Debug;Release</Configurations>
+		<Platforms>AnyCPU</Platforms>
+		<Configurations>Debug;Release</Configurations>
 
-        <PackageId>FSharp.Appsettings</PackageId>
-        <Version>1.0.4</Version>
-        <Authors>Mathias Amandus Andvik Løken</Authors>
-        <PackageTags>F#;FSharp;Appsettings;Config;Configuration</PackageTags>
-        <Description>
-            Minimalistic environment-sensitive appsettings.json loader
-        </Description>
-        
-        <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/MathiasFrost/FSharp.Appsettings</RepositoryUrl>
+		<PackageId>FSharp.Appsettings</PackageId>
+		<Version>1.0.4</Version>
+		<Authors>Mathias Amandus Andvik Løken</Authors>
+		<PackageTags>F#;FSharp;Appsettings;Config;Configuration</PackageTags>
+		<Description>
+			Minimalistic environment-sensitive appsettings.json loader
+		</Description>
 
-        <PackageIcon>logo.png</PackageIcon>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    </PropertyGroup>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/MathiasFrost/FSharp.Appsettings</RepositoryUrl>
 
-    <ItemGroup>
-        <None Include="..\logo.png" Pack="true" Visible="false" PackagePath=""/>
-        <None Include="..\README.md" Pack="true" Visible="false" PackagePath=""/>
-        <None Include="..\LICENSE" Pack="true" Visible="false" PackagePath=""/>
-    </ItemGroup>
+		<PackageIcon>logo.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <Compile Include="Appsettings.fs"/>
-        <Compile Include="JsonObjectExtensions.fs"/>
-    </ItemGroup>
+	<ItemGroup>
+		<None Include="..\logo.png" Pack="true" Visible="false" PackagePath="" />
+		<None Include="..\README.md" Pack="true" Visible="false" PackagePath="" />
+		<None Include="..\LICENSE" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Update="FSharp.Core" Version="7.0.0"/>
-    </ItemGroup>
+	<ItemGroup>
+		<Compile Include="Appsettings.fs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Update="FSharp.Core" Version="7.0.200" />
+	</ItemGroup>
 
 </Project>

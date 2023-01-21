@@ -1,4 +1,7 @@
-﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+﻿<wpf:ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:s="clr-namespace:System;assembly=mscorlib"
+		xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xml:space="preserve">
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/FSharpFormat/MaxArrayOrListWidth/@EntryValue">160</s:Int64>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/FSharpFormat/MaxElmishWidth/@EntryValue">160</s:Int64>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/FSharpFormat/MaxFunctionBindingWidth/@EntryValue">160</s:Int64>
@@ -7,4 +10,7 @@
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/FSharpFormat/MaxRecordWidth/@EntryValue">160</s:Int64>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/FSharpFormat/MaxValueBindingWidth/@EntryValue">160</s:Int64>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/FSharpFormat/WRAP_LIMIT/@EntryValue">160</s:Int64>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=Appsettings/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Appsettings/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=iteri/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=TODOC/@EntryIndexedValue">True</s:Boolean>
+</wpf:ResourceDictionary>

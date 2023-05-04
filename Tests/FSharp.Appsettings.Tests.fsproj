@@ -15,7 +15,7 @@
 		<Compile Include="AppsettingsLoad.fs" />
 		<Compile Include="Dummy.fs" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<Content Include="appsettings*.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

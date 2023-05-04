@@ -15,7 +15,10 @@ appsettings |> array "Arr" |> list |> List.iteri (fun i node -> node |> value<st
 
 type Program = { unit: unit }
 
-let logger = LoggerFactory.Create(fun builder -> builder |> ignore).CreateLogger<Program>()
+let logger =
+    LoggerFactory
+        .Create(fun builder -> builder |> ignore)
+        .CreateLogger<Program>()
 
 let logInformation (message: string) =
     logger.LogInformation message

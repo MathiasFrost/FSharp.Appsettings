@@ -6,8 +6,7 @@ Minimalistic environment-sensitive `appsettings.json` loader.
 
 ## Usage
 
-Define `FSHARP_ENVIRONMENT` as an environment variable. For development this will normally be done by creating a
-launchSettings.json file:
+Define `FSHARP_ENVIRONMENT` as an environment variable. For development this will normally be done by creating a launchSettings.json file:
 
 ```json5
 {
@@ -36,8 +35,8 @@ open System.Text.Json
 let required = appsettings.Deserialize<RequiredConfig>()
 ```
 
-`appsettings.json` will always be loaded, while `appsettings.{FSHARP_ENVIRONMENT}.json` will be loaded
-if `FSHARP_ENVIRONMENT` is defined as an environment variable.  
+`appsettings.json` will always be loaded, while `appsettings.{FSHARP_ENVIRONMENT}.json` will be loaded if `FSHARP_ENVIRONMENT` is defined as an environment
+variable.  
 Properties from `appsettings.json` will be overwritten by the environment specific appsettings.  
 Arrays will be added together if a value does not already exist in the array.
 
@@ -118,16 +117,15 @@ Instead it detects `appsettings{.FSHARP_ENVIRONMENT?}.local.json` that you can _
 
 ## Building
 
-The `appsettings.json` files must be copied over to output directory. This is achieved by adding the following to
-your `.fsproj`.
+The `appsettings.json` files must be copied over to output directory. This is achieved by adding the following to your `.fsproj`.
 
 ```xml
 
 <ItemGroup>
-    <Content Include="appsettings*.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+	<Content Include="appsettings*.json">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	</Content>
 </ItemGroup>
 ```
 

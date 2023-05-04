@@ -1,36 +1,17 @@
 ﻿open System.Text.Json
 open FSharp.Appsettings
-open FSharp.Appsettings.Sandbox.Configuration
 open Microsoft.Extensions.Logging
-
-let appsettings = Appsettings.Load()
 
 printfn $"Config: %s{appsettings.ToJsonString(JsonSerializerOptions(WriteIndented = true))}"
 
-let required = appsettings.Deserialize<RequiredConfig>()
+appsettings |> value<string> "File" |> printfn "Highest priority: %s"
 
-printfn $"Required: %A{required}"
+appsettings |> object "Secrets" |> value<string> "ConnectionString" |> printfn "Secret connection string: %s"
 
-appsettings
-    .GetPropertyValue("File")
-    .GetValue<string>()
-|> printfn "Highest priority: %s"
+appsettings |> object "Logging" |> object "LogLevel" |> value<string> "Default" |> printfn "Default LogLevel: %s"
 
-appsettings
-    .GetPropertyValue("Secrets")
-    .AsObject()
-    .GetPropertyValue("ConnectionString")
-    .GetValue<string>()
-|> printfn "Secret connection string: %s"
-
-appsettings
-    .GetPropertyValue("Logging")
-    .AsObject()
-    .GetPropertyValue("LogLevel")
-    .AsObject()
-    .GetPropertyValue("Default")
-    .GetValue<string>()
-|> printfn "Default LogLevel: %s"
+appsettings |> array "Arr" |> iteri (fun i node -> node |> value<string> "Something" |> printfn "Something: %d %s" i)
+appsettings |> array "Arr" |> list |> List.iteri (fun i node -> node |> value<string> "Something" |> printfn "Something: %d %s" i)
 
 type Program = { unit: unit }
 

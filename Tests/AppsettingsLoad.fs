@@ -2,7 +2,6 @@ module AppsettingsLoad
 
 open System
 open System.IO
-open System.Text.Json.Nodes
 open System.Text.Json
 open NUnit.Framework
 open FSharp.Appsettings
@@ -33,13 +32,14 @@ let ``Result should be empty if no appsettings.json files`` () =
     File.Delete "appsettings.local.json"
     File.Delete "appsettings.Development.local.json"
 
-    let appsettings = Appsettings.Load()
+    let appsettings = LoadAppsettings()
 
     // Restore files
     File.WriteAllText("appsettings.json", rootJson)
     File.WriteAllText("appsettings.Development.json", envJson)
     File.WriteAllText("appsettings.local.json", rootLocalJson)
     File.WriteAllText("appsettings.Development.local.json", envLocalJson)
+
     Assert.That("{}", Is.EqualTo(appsettings.ToJsonString()))
 
 [<Test>]
@@ -52,14 +52,14 @@ let ``Highest priority should be appsettings.json when no higher exists`` () =
     File.Delete "appsettings.local.json"
     File.Delete "appsettings.Development.local.json"
 
-    let appsettings = Appsettings.Load()
+    let appsettings = LoadAppsettings()
 
     // Restore files
     File.WriteAllText("appsettings.Development.json", envJson)
     File.WriteAllText("appsettings.local.json", rootLocalJson)
     File.WriteAllText("appsettings.Development.local.json", envLocalJson)
 
-    let file = appsettings.GetPropertyValue "File"
+    let file = appsettings.GetNode "File"
     Assert.That("appsettings.json", Is.EqualTo(file.Deserialize<string>()))
 
 [<Test>]
@@ -70,13 +70,13 @@ let ``Highest priority should be appsettings.Development.json when no higher exi
     File.Delete "appsettings.local.json"
     File.Delete "appsettings.Development.local.json"
 
-    let appsettings = Appsettings.Load()
+    let appsettings = LoadAppsettings()
 
     // Restore files
     File.WriteAllText("appsettings.local.json", rootLocalJson)
     File.WriteAllText("appsettings.Development.local.json", envLocalJson)
 
-    let file = appsettings.GetPropertyValue "File"
+    let file = appsettings.GetNode "File"
     Assert.That("appsettings.Development.json", Is.EqualTo(file.Deserialize<string>()))
 
 [<Test>]
@@ -85,23 +85,24 @@ let ``Highest priority should be appsettings.local.json when no higher exists`` 
 
     File.Delete "appsettings.Development.local.json"
 
-    let appsettings = Appsettings.Load()
+    let appsettings = LoadAppsettings()
 
     // Restore files
     File.WriteAllText("appsettings.Development.local.json", envLocalJson)
 
-    let file = appsettings.GetPropertyValue "File"
+    let file = appsettings.GetNode "File"
     Assert.That("appsettings.local.json", Is.EqualTo(file.Deserialize<string>()))
 
 [<Test>]
 let ``Highest priority should be appsettings.Development.local.json`` () =
-    let appsettings = Appsettings.Load()
-    let file = appsettings.GetPropertyValue "File"
+    let appsettings = LoadAppsettings()
+    let file = appsettings.GetNode "File"
     Assert.That("appsettings.Development.local.json", Is.EqualTo(file.Deserialize<string>()))
 
 [<Test>]
 let ``Highest priority should be appsettings.local.json if FSHARP_ENVIRONMENT not set`` () =
     Environment.SetEnvironmentVariable("FSHARP_ENVIRONMENT", null)
-    let appsettings = Appsettings.Load()
-    let file = appsettings.GetPropertyValue "File"
+
+    let appsettings = LoadAppsettings()
+    let file = appsettings.GetNode "File"
     Assert.That("appsettings.local.json", Is.EqualTo(file.Deserialize<string>()))

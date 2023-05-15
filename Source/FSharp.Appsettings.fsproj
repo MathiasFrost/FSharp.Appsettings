@@ -10,7 +10,7 @@
 		<Configurations>Debug;Release</Configurations>
 
 		<PackageId>FSharp.Appsettings</PackageId>
-		<Version>1.0.5</Version>
+		<Version>1.0.6</Version>
 		<Authors>Mathias Amandus Andvik Løken</Authors>
 		<PackageTags>F#;FSharp;Appsettings;Config;Configuration</PackageTags>
 		<Description>
@@ -37,6 +37,7 @@
 
 	<ItemGroup>
 		<PackageReference Update="FSharp.Core" Version="7.0.200" />
+		<PackageReference Include="FSharp.Data" Version="6.2.0" />
 	</ItemGroup>
 
 </Project>

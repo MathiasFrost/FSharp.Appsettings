@@ -11,9 +11,7 @@ let private EmptyJsonObject () = JsonObject.Parse("{}").AsObject()
 /// Read file and return a JsonObject. If it doesn't exist return en empty JsonObject
 let private ParseJsonFile filename =
     match File.Exists filename with
-    | true ->
-        (File.ReadAllText filename |> JsonObject.Parse)
-            .AsObject()
+    | true -> (File.ReadAllText filename |> JsonObject.Parse).AsObject()
     | false -> EmptyJsonObject()
 
 /// Find out which prop type the JsonNode is
@@ -21,18 +19,16 @@ let private (|Value|Object|Array|) (node: JsonNode) =
     try
         node.AsValue() |> ignore
         Value
-    with
-    | :? InvalidOperationException ->
+    with :? InvalidOperationException ->
         try
             node.AsObject() |> ignore
             Object
-        with
-        | :? InvalidOperationException ->
+        with :? InvalidOperationException ->
             try
                 node.AsArray() |> ignore
                 Array
-            with
-            | :? InvalidOperationException -> failwith "JsonNode could not be cast to anything"
+            with :? InvalidOperationException ->
+                failwith "JsonNode could not be cast to anything"
 
 /// Try to find the value of a key
 let private TryFind (key: string) (env: JsonObject) : JsonNode option =
@@ -51,7 +47,9 @@ let rec private MergeArray (a: JsonArray) (b: JsonArray) : unit =
 
     while elementA.MoveNext() do
         let copyA = CopyNode elementA.Current
-        if not (Exists b copyA) then b.Add(copyA)
+
+        if not (Exists b copyA) then
+            b.Add(copyA)
 
     elementA.Dispose()
 
@@ -92,8 +90,8 @@ let LoadAppsettings () : JsonObject =
     let fsEnv =
         try
             Some(Environment.GetEnvironmentVariable "FSHARP_ENVIRONMENT")
-        with
-        | :? ArgumentNullException -> None
+        with :? ArgumentNullException ->
+            None
 
     let rootJson = ParseJsonFile "appsettings.json"
 
@@ -139,20 +137,25 @@ type JsonObjectExtensions =
     [<Extension>]
     static member inline GetArray(xs: JsonObject, propertyName: string) = xs.GetNode(propertyName).AsArray()
 
+    /// TODOC
+    [<Extension>]
+    static member inline GetEnum<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> ValueType>(xs: JsonNode) =
+        Enum.Parse<'TEnum>(xs.GetValue<string>())
+
 
 /// TODOC
 let inline object (propertyName: string) (json: JsonNode) =
     try
         json.AsObject().GetObject(propertyName)
-    with
-    | :? InvalidOperationException -> invalidOp $"Could not find object property %s{json.GetPath()}.%s{propertyName}"
+    with :? InvalidOperationException ->
+        invalidOp $"Could not find object property %s{json.GetPath()}.%s{propertyName}"
 
 /// TODOC
 let inline array (propertyName: string) (json: JsonNode) =
     try
         json.AsObject().GetArray(propertyName)
-    with
-    | :? InvalidOperationException -> invalidOp $"Could not find array property %s{json.GetPath()}.%s{propertyName}"
+    with :? InvalidOperationException ->
+        invalidOp $"Could not find array property %s{json.GetPath()}.%s{propertyName}"
 
 /// TODOC
 let inline iter (action: JsonNode -> unit) (jsonArray: JsonArray) =
@@ -175,6 +178,26 @@ let inline iteri (action: int -> JsonNode -> unit) (jsonArray: JsonArray) =
     enumerator.Dispose()
 
 /// TODOC
+let inline iterd (action: string * JsonNode -> unit) (jsonObject: JsonObject) =
+    let enumerator = jsonObject.GetEnumerator()
+
+    while enumerator.MoveNext() do
+        action (enumerator.Current.Key, enumerator.Current.Value)
+
+    enumerator.Dispose()
+
+/// TODOC
+let inline iterdi (action: int -> string * JsonNode -> unit) (jsonObject: JsonObject) =
+    let enumerator = jsonObject.GetEnumerator()
+    let mutable i = 0
+
+    while enumerator.MoveNext() do
+        action i (enumerator.Current.Key, enumerator.Current.Value)
+        i <- i + 1
+
+    enumerator.Dispose()
+
+/// TODOC
 let inline list (jsonArray: JsonArray) =
     let enumerator = jsonArray.GetEnumerator()
 
@@ -186,8 +209,22 @@ let inline list (jsonArray: JsonArray) =
     res
 
 /// TODOC
+let inline dict (propertyName: string) (json: JsonNode) =
+    try
+        let enumerator = json.AsObject().GetObject(propertyName).GetEnumerator()
+
+        let res =
+            [ while enumerator.MoveNext() do
+                  yield (enumerator.Current.Key, enumerator.Current.Value) ]
+
+        enumerator.Dispose()
+        res
+    with :? InvalidOperationException ->
+        invalidOp $"Could not find array property %s{json.GetPath()}.%s{propertyName}"
+
+/// TODOC
 let inline value<'T> (propertyName: string) (json: JsonNode) =
     try
         json.AsObject().GetPropertyValue<'T>(propertyName)
-    with
-    | :? InvalidOperationException -> invalidOp $"Could not find %s{typeof<'T>.Name} property %s{json.GetPath()}.%s{propertyName}"
+    with :? InvalidOperationException ->
+        invalidOp $"Could not find %s{typeof<'T>.Name} property %s{json.GetPath()}.%s{propertyName}"

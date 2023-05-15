@@ -13,12 +13,11 @@ appsettings |> object "Logging" |> object "LogLevel" |> value<string> "Default" 
 appsettings |> array "Arr" |> iteri (fun i node -> node |> value<string> "Something" |> printfn "Something: %d %s" i)
 appsettings |> array "Arr" |> list |> List.iteri (fun i node -> node |> value<string> "Something" |> printfn "Something: %d %s" i)
 
+let jsonNodes = appsettings |> object "Logging" |> object "LogLevel" |> iterdi (fun i (key, value) -> printfn $"%i{i} %s{key} %A{(value.GetEnum<LogLevel>())}")
+
 type Program = { unit: unit }
 
-let logger =
-    LoggerFactory
-        .Create(fun builder -> builder |> ignore)
-        .CreateLogger<Program>()
+let logger = LoggerFactory.Create(fun builder -> builder |> ignore).CreateLogger<Program>()
 
 let logInformation (message: string) =
     logger.LogInformation message

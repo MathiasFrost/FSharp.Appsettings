@@ -37,6 +37,7 @@
 
 	<ItemGroup>
 		<PackageReference Update="FSharp.Core" Version="7.0.200" />
+		<PackageReference Include="FSharp.Data" Version="6.2.0" />
 	</ItemGroup>
 
 </Project>

@@ -11,7 +11,9 @@ let private EmptyJsonObject () = JsonObject.Parse("{}").AsObject()
 /// Read file and return a JsonObject. If it doesn't exist return en empty JsonObject
 let private ParseJsonFile filename =
     match File.Exists filename with
-    | true -> (File.ReadAllText filename |> JsonObject.Parse).AsObject()
+    | true ->
+        (File.ReadAllText filename |> JsonObject.Parse)
+            .AsObject()
     | false -> EmptyJsonObject()
 
 /// Find out which prop type the JsonNode is
@@ -19,16 +21,18 @@ let private (|Value|Object|Array|) (node: JsonNode) =
     try
         node.AsValue() |> ignore
         Value
-    with :? InvalidOperationException ->
+    with
+    | :? InvalidOperationException ->
         try
             node.AsObject() |> ignore
             Object
-        with :? InvalidOperationException ->
+        with
+        | :? InvalidOperationException ->
             try
                 node.AsArray() |> ignore
                 Array
-            with :? InvalidOperationException ->
-                failwith "JsonNode could not be cast to anything"
+            with
+            | :? InvalidOperationException -> failwith "JsonNode could not be cast to anything"
 
 /// Try to find the value of a key
 let private TryFind (key: string) (env: JsonObject) : JsonNode option =
@@ -48,8 +52,7 @@ let rec private MergeArray (a: JsonArray) (b: JsonArray) : unit =
     while elementA.MoveNext() do
         let copyA = CopyNode elementA.Current
 
-        if not (Exists b copyA) then
-            b.Add(copyA)
+        if not (Exists b copyA) then b.Add(copyA)
 
     elementA.Dispose()
 
@@ -85,13 +88,11 @@ and private Merge (a: JsonObject) (b: JsonObject) : JsonObject =
 
 /// Load appsettings files, merge them and return a JsonObject
 let LoadAppsettings () : JsonObject =
-    printfn "load"
-
     let fsEnv =
         try
             Some(Environment.GetEnvironmentVariable "FSHARP_ENVIRONMENT")
-        with :? ArgumentNullException ->
-            None
+        with
+        | :? ArgumentNullException -> None
 
     let rootJson = ParseJsonFile "appsettings.json"
 
@@ -147,15 +148,15 @@ type JsonObjectExtensions =
 let inline object (propertyName: string) (json: JsonNode) =
     try
         json.AsObject().GetObject(propertyName)
-    with :? InvalidOperationException ->
-        invalidOp $"Could not find object property %s{json.GetPath()}.%s{propertyName}"
+    with
+    | :? InvalidOperationException -> invalidOp $"Could not find object property %s{json.GetPath()}.%s{propertyName}"
 
 /// TODOC
 let inline array (propertyName: string) (json: JsonNode) =
     try
         json.AsObject().GetArray(propertyName)
-    with :? InvalidOperationException ->
-        invalidOp $"Could not find array property %s{json.GetPath()}.%s{propertyName}"
+    with
+    | :? InvalidOperationException -> invalidOp $"Could not find array property %s{json.GetPath()}.%s{propertyName}"
 
 /// TODOC
 let inline iter (action: JsonNode -> unit) (jsonArray: JsonArray) =
@@ -211,7 +212,11 @@ let inline list (jsonArray: JsonArray) =
 /// TODOC
 let inline dict (propertyName: string) (json: JsonNode) =
     try
-        let enumerator = json.AsObject().GetObject(propertyName).GetEnumerator()
+        let enumerator =
+            json
+                .AsObject()
+                .GetObject(propertyName)
+                .GetEnumerator()
 
         let res =
             [ while enumerator.MoveNext() do
@@ -219,12 +224,12 @@ let inline dict (propertyName: string) (json: JsonNode) =
 
         enumerator.Dispose()
         res
-    with :? InvalidOperationException ->
-        invalidOp $"Could not find array property %s{json.GetPath()}.%s{propertyName}"
+    with
+    | :? InvalidOperationException -> invalidOp $"Could not find array property %s{json.GetPath()}.%s{propertyName}"
 
 /// TODOC
 let inline value<'T> (propertyName: string) (json: JsonNode) =
     try
         json.AsObject().GetPropertyValue<'T>(propertyName)
-    with :? InvalidOperationException ->
-        invalidOp $"Could not find %s{typeof<'T>.Name} property %s{json.GetPath()}.%s{propertyName}"
+    with
+    | :? InvalidOperationException -> invalidOp $"Could not find %s{typeof<'T>.Name} property %s{json.GetPath()}.%s{propertyName}"

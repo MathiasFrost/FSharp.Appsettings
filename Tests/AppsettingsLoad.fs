@@ -14,8 +14,8 @@ let ``FSHARP_ENVIRONMENT should be Development`` () =
     let env =
         try
             Some(Environment.GetEnvironmentVariable "FSHARP_ENVIRONMENT")
-        with :? ArgumentNullException ->
-            None
+        with
+        | :? ArgumentNullException -> None
 
     Assert.That(env.IsSome, Is.True)
     Assert.That(env.Value, Is.EqualTo "Development")

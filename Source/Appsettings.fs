@@ -17,19 +17,19 @@ let private ParseJsonFile filename =
 
 let private IsObject (jsonNode: JsonNode) : bool * JsonObject option =
     try
-        (true, Some(jsonNode.AsObject()))
-    with :? InvalidOperationException ->
+        let obj = jsonNode.AsObject()
+        (true, Some obj)
+    with _ ->
         (false, None)
 
 /// Layer b on top of a
 let rec private Merge (a: JsonObject) (b: JsonObject) : unit =
-    for pairB in b do
-        if a.ContainsKey pairB.Key then
+    if a <> null && b <> null then
+        for pairB in b do
             match IsObject pairB.Value, IsObject a[pairB.Key] with
             | (true, Some objB), (true, Some objA) -> objA |> Merge objB
-            | _ -> a.Remove pairB.Key |> ignore
-
-        a.TryAdd(pairB.Key, pairB.Value.ToJsonString() |> JsonNode.Parse) |> ignore
+            | _ when not (a.ContainsKey pairB.Key) || a.Remove pairB.Key -> a.TryAdd(pairB.Key, pairB.Value.ToJsonString() |> JsonNode.Parse) |> ignore
+            | _ -> ()
 
 /// Load appsettings files, merge them and return a JsonObject
 let LoadAppsettings () : JsonObject =

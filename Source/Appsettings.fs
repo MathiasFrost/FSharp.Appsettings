@@ -3,6 +3,7 @@
 open System
 open System.IO
 open System.Runtime.CompilerServices
+open System.Collections.Generic
 open System.Text.Json.Nodes
 
 /// Returns an empty "{}" JsonObject
@@ -11,88 +12,33 @@ let private EmptyJsonObject () = JsonObject.Parse("{}").AsObject()
 /// Read file and return a JsonObject. If it doesn't exist return en empty JsonObject
 let private ParseJsonFile filename =
     match File.Exists filename with
-    | true ->
-        (File.ReadAllText filename |> JsonObject.Parse)
-            .AsObject()
+    | true -> (File.ReadAllText filename |> JsonObject.Parse).AsObject()
     | false -> EmptyJsonObject()
 
-/// Find out which prop type the JsonNode is
-let private (|Value|Object|Array|) (node: JsonNode) =
+let private IsObject (jsonNode: JsonNode) : bool * JsonObject option =
     try
-        node.AsValue() |> ignore
-        Value
-    with
-    | :? InvalidOperationException ->
-        try
-            node.AsObject() |> ignore
-            Object
-        with
-        | :? InvalidOperationException ->
-            try
-                node.AsArray() |> ignore
-                Array
-            with
-            | :? InvalidOperationException -> failwith "JsonNode could not be cast to anything"
+        (true, Some(jsonNode.AsObject()))
+    with :? InvalidOperationException ->
+        (false, None)
 
-/// Try to find the value of a key
-let private TryFind (key: string) (env: JsonObject) : JsonNode option =
-    let item = env.Item key
-    if item = null then None else Some item
+/// Layer b on top of a
+let rec private Merge (a: JsonObject) (b: JsonObject) : unit =
+    for pairB in b do
+        if a.ContainsKey pairB.Key then
+            match IsObject pairB.Value, IsObject a[pairB.Key] with
+            | (true, Some objB), (true, Some objA) -> objA |> Merge objB
+            | _ -> a.Remove pairB.Key |> ignore
 
-/// Check if JsonArray array contains a JsonNode
-let private Exists (arr: JsonArray) (node: JsonNode) : bool = arr |> Seq.exists (fun x -> x.ToJsonString() = node.ToJsonString())
-
-/// Stringify a JsonNode and parse it into a new JsonNode
-let private CopyNode (node: JsonNode) = node.ToJsonString() |> JsonNode.Parse
-
-/// Add array elements from a that does not exist in b
-let rec private MergeArray (a: JsonArray) (b: JsonArray) : unit =
-    let elementA = a.GetEnumerator()
-
-    while elementA.MoveNext() do
-        let copyA = CopyNode elementA.Current
-
-        if not (Exists b copyA) then b.Add(copyA)
-
-    elementA.Dispose()
-
-/// Add the values from a that does not exist in b
-and private Merge (a: JsonObject) (b: JsonObject) : JsonObject =
-    let propsA = a.GetEnumerator()
-
-    while propsA.MoveNext() do
-        match propsA.Current.Value with
-        | Value -> // A is value
-            match TryFind propsA.Current.Key b with
-            | Some _ -> () // If prop exists in b, don't add regardless of type
-            | None -> b.Add(propsA.Current.Key, CopyNode propsA.Current.Value) // If prop does not exist in b, we also don't care about the type of a's prop
-        | Object -> // A is object
-            match TryFind propsA.Current.Key b with
-            | Some propB ->
-                match propB with
-                | Value -> () // If prop B is a value we simply replace object A with the value
-                | Object -> Merge (propsA.Current.Value.AsObject()) (propB.AsObject()) |> ignore // Ignore because object itself is mutated
-                | Array -> () // If prop B is an array we simply replace object A with the array
-            | None -> b.Add(propsA.Current.Key, CopyNode propsA.Current.Value)
-        | Array -> // A is array
-            match TryFind propsA.Current.Key b with
-            | Some propB ->
-                match propB with
-                | Value -> () // If prop B is a value we simply replace array A with the value
-                | Object -> () // If prop B is an object we simply replace array A with the object
-                | Array -> MergeArray (propsA.Current.Value.AsArray()) (propB.AsArray()) // If both is array we do exclusive array merge
-            | None -> b.Add(propsA.Current.Key, CopyNode propsA.Current.Value)
-
-    propsA.Dispose()
-    b
+        a.TryAdd(pairB.Key, pairB.Value.ToJsonString() |> JsonNode.Parse) |> ignore
 
 /// Load appsettings files, merge them and return a JsonObject
 let LoadAppsettings () : JsonObject =
     let fsEnv =
         try
-            Some(Environment.GetEnvironmentVariable "FSHARP_ENVIRONMENT")
-        with
-        | :? ArgumentNullException -> None
+            let env = Environment.GetEnvironmentVariable "FSHARP_ENVIRONMENT"
+            if env = null then None else Some(env)
+        with :? ArgumentNullException ->
+            None
 
     let rootJson = ParseJsonFile "appsettings.json"
 
@@ -108,9 +54,11 @@ let LoadAppsettings () : JsonObject =
         | Some env -> ParseJsonFile $"appsettings.{env}.local.json"
         | None -> EmptyJsonObject()
 
-    let mergedToEnv = Merge rootJson envJson
-    let mergedToLocal = Merge mergedToEnv localRootJson
-    Merge mergedToLocal localEnvJson
+    Merge rootJson envJson
+    Merge rootJson localRootJson
+    Merge rootJson localEnvJson
+
+    rootJson
 
 /// Root JsonObject containing the merged appsettings.json values
 let appsettings = LoadAppsettings()
@@ -212,11 +160,7 @@ let inline list (jsonArray: JsonArray) =
 /// TODOC
 let inline dict (propertyName: string) (json: JsonNode) =
     try
-        let enumerator =
-            json
-                .AsObject()
-                .GetObject(propertyName)
-                .GetEnumerator()
+        let enumerator = json.AsObject().GetObject(propertyName).GetEnumerator()
 
         let res =
             [ while enumerator.MoveNext() do

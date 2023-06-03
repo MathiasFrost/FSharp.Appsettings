@@ -134,17 +134,6 @@ let private (|Value|Object|Array|Null|) (node: JsonNode) =
                 with
                 | :? InvalidOperationException -> failwith "JsonNode could not be cast to anything"
 
-// Wrapper around zip that set JsonNode in b to null if not exist from a
-let private ZipOptionalB (a: (string * JsonNode) list) (b: (string * JsonNode) list) : ((string * JsonNode) * (string * JsonNode)) list =
-    a
-    |> List.map (fun (keyA, valA) ->
-        let valB: JsonNode =
-            match b |> List.tryFind (fun (keyB, _) -> keyA = keyB) with
-            | Some (_, x) -> x
-            | None -> null
-
-        ((keyA, valA), (keyA, valB)))
-
 /// TODOC
 let private CopyNode (jsonNode: JsonNode) = jsonNode.ToJsonString() |> JsonNode.Parse
 

@@ -2,7 +2,7 @@
 open FSharp.Appsettings
 open Microsoft.Extensions.Logging
 
-printfn $"Config: %s{appsettings.ToJsonString(JsonSerializerOptions(WriteIndented = true))}"
+printfn $"%s{appsettings.ToJsonString(JsonSerializerOptions(WriteIndented = true))}"
 
 appsettings |> value<string> "File" |> printfn "Highest priority: %s"
 

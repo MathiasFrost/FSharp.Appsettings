@@ -88,7 +88,7 @@ let ``Array B should exclusive merge with Array A`` () =
     let array = appsettings.GetNode "13_ArrayOnArray"
     let values = array.Deserialize<JsonNode list>()
     Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "\"Dev\""))
-    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "\"Root\""))
+    Assert.False(values |> List.exists (fun x -> x.ToJsonString() = "\"Root\""))
     Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "6"))
 
 [<Test>]
@@ -96,7 +96,7 @@ let ``Array B should exclusive merge with 2D Array A`` () =
     let array = appsettings.GetNode "14_2DArrayOnArray"
     let values = array.Deserialize<JsonNode list>()
     Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "\"Dev\""))
-    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "[\"Root\"]"))
+    Assert.False(values |> List.exists (fun x -> x.ToJsonString() = "[\"Root\"]"))
     Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "6"))
 
 [<Test>]
@@ -104,7 +104,7 @@ let ``2D Array B should exclusive merge with 2D Array A`` () =
     let array = appsettings.GetNode "15_2DArrayOn2DArray"
     let values = array.Deserialize<JsonNode list>()
     Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "[\"Dev\"]"))
-    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "[\"Root\"]"))
+    Assert.False(values |> List.exists (fun x -> x.ToJsonString() = "[\"Root\"]"))
     Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "[6,6]"))
 
 [<Test>]
@@ -112,12 +112,12 @@ let ``Array B should exclusive merge with Object Array A`` () =
     let array = appsettings.GetNode "16_ObjectArrayOnArray"
     let values = array.Deserialize<JsonNode list>()
     Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "\"Dev\""))
-    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "{\"Prop\":\"Root\"}"))
+    Assert.False(values |> List.exists (fun x -> x.ToJsonString() = "{\"Prop\":\"Root\"}"))
 
 [<Test>]
 let ``Object Array B should exclusive merge with Object Array A`` () =
     let array = appsettings.GetNode "17_ObjectArrayOnObjectArray"
     let values = array.Deserialize<JsonNode list>()
     Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "{\"Prop\":\"Dev\"}"))
-    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "{\"Prop\":\"Root\"}"))
-    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "{\"Bool\":true}"))
+    Assert.False(values |> List.exists (fun x -> x.ToJsonString() = "{\"Prop\":\"Root\"}"))
+    Assert.True(values |> List.exists (fun x -> x.ToJsonString() = "{\"Bool\":false}"))
